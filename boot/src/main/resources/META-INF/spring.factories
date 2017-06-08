@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+ca.jfbconception.slack.logback.boot.config.SlackAppenderAutoConfiguration
