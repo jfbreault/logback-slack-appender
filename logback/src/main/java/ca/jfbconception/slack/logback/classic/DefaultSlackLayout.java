@@ -28,19 +28,23 @@ public class DefaultSlackLayout extends LayoutBase<ILoggingEvent> {
     private ObjectMapper objectMapper;
     private String channel;
 
-    private ThrowableProxyConverter throwableProxyConverter = new RootCauseFirstThrowableProxyConverter();
+    private ThrowableProxyConverter throwableProxyConverter;
 
     @Override
     public void setContext(Context context) {
         super.setContext(context);
-        throwableProxyConverter.setContext(context);
     }
 
     @Override
     public void start() {
         super.start();
-        throwableProxyConverter.start();
-        if(objectMapper == null){
+        if (throwableProxyConverter == null) {
+            throwableProxyConverter = new RootCauseFirstThrowableProxyConverter();
+            throwableProxyConverter.setContext(getContext());
+            throwableProxyConverter.start();
+        }
+
+        if (objectMapper == null) {
             objectMapper = new ObjectMapper();
             objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
         }
@@ -55,19 +59,20 @@ public class DefaultSlackLayout extends LayoutBase<ILoggingEvent> {
     @Override
     public String doLayout(ILoggingEvent event) {
 
-        SlackAttachment.SlackAttachmentBuilder attBiuilder = SlackAttachment.builder()
-                .ts(event.getTimeStamp())
-                .color(levelToColor(event.getLevel()))
+        SlackAttachment.SlackAttachmentBuilder attBiuilder = SlackAttachment.builder() //
+                .ts(event.getTimeStamp()) //
+
+                .pretext(levelToEmoji(event.getLevel()) + event.getFormattedMessage()) //
+                .color(levelToColor(event.getLevel())) //
                 .field(SlackField.builder().title("logger").value(event.getLoggerName()).build());
 
         addThrowable(event, attBiuilder);
         for (Entry<String, String> entry : event.getMDCPropertyMap().entrySet()) {
-            attBiuilder.miscRootField(entry.getKey(), entry.getValue());
+            attBiuilder.field(SlackField.builder().title(entry.getKey()).value(entry.getValue()).isShort(true).build());
         }
 
         SlackMessage message = SlackMessage.builder()//
-                .channel(channel)
-                .message(levelToEmoji(event.getLevel()) + event.getFormattedMessage())
+                .channel(channel) //
                 .attachment(attBiuilder.build())//
                 .build();//
 
@@ -83,10 +88,10 @@ public class DefaultSlackLayout extends LayoutBase<ILoggingEvent> {
         IThrowableProxy throwable = event.getThrowableProxy();
         if (throwable != null) {
             builder //
-                    .field(SlackField.builder().title("exception").value(throwable.getMessage()).build()) //
-                    .field(SlackField.builder().title("stacktrace").value(throwableProxyConverter.convert(event)).build());
+                    .text(throwableProxyConverter.convert(event))//
+                    .field(SlackField.builder().title("message").value(throwable.getMessage()).build()); //
             if (throwable.getCause() != null) {
-                builder.field(SlackField.builder().title("cause").value(throwable.getCause().getClassName()).build());
+                builder.field(SlackField.builder().title("cause").value(throwable.getCause().getClassName() + " - " + throwable.getCause().getMessage()).build());
             }
         }
 

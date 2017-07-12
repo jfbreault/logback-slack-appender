@@ -10,7 +10,7 @@ import ca.jfbconception.slack.logback.classic.SlackLogbackAppender;
 
 @Configuration
 @EnableConfigurationProperties(SlackAppenderProperties.class)
-@ConditionalOnProperty(value = "tm.slack.logback.enabled", matchIfMissing = true)
+@ConditionalOnProperty(value = "slack.logback.enabled", matchIfMissing = true)
 public class SlackAppenderAutoConfiguration {
     @Autowired
     private SlackAppenderProperties properies;

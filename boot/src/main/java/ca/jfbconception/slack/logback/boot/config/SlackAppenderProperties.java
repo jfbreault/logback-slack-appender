@@ -5,7 +5,7 @@ import org.springframework.boot.logging.LogLevel;
 
 import lombok.Data;
 
-@ConfigurationProperties(prefix = "tm.slack.logback")
+@ConfigurationProperties(prefix = "slack.logback")
 @Data
 public class SlackAppenderProperties {
 

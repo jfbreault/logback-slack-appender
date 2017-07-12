@@ -10,7 +10,6 @@
     <name>slack-logback</name>
     <description>Slack appender</description>
 
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -18,10 +17,8 @@
         <assertj.version>3.3.0</assertj.version>
         <logback.version>1.1.6</logback.version>
 
-        <release.arguments>-P release</release.arguments>
         <maven.javadoc.skip>true</maven.javadoc.skip>
     </properties>
-
 
     <dependencyManagement>
         <dependencies>
@@ -64,7 +61,6 @@
                 <configuration>
                     <autoversionsubmodules>true</autoversionsubmodules>
                     <tagNameFormat>@{project.version}</tagNameFormat>
-                    <arguments>${release.arguments}</arguments>
                 </configuration>
             </plugin>
             <plugin>
@@ -93,39 +89,6 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-    </profiles>
-
 
     <modules>
         <module>logback</module>

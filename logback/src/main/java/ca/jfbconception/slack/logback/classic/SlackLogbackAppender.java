@@ -71,7 +71,6 @@ public class SlackLogbackAppender extends UnsynchronizedAppenderBase<ILoggingEve
     protected void append(ILoggingEvent loggingEvent) {
         if (isStarted()) {
             String message = layout.doLayout(loggingEvent);
-
             try {
                 byte[] payload = message.getBytes();
 
